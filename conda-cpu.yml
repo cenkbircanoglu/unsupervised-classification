@@ -1,0 +1,10 @@
+name: unsupervised_classification
+
+dependencies:
+  - python==3.7
+  - pip
+  - torch
+  - torchvision
+  - pip:
+    - -rrequirements.txt
+    - -e .
