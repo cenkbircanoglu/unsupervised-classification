@@ -1,3 +1,5 @@
+import math
+
 import torch
 from torch import nn
 from torchvision import models
@@ -11,6 +13,22 @@ class DeepClusterer(nn.Module):
         self.backbone = backbone
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(last_channel, num_classes)
+        self._initialize_weights()
+
+    def _initialize_weights(self):
+        for y, m in enumerate(self.modules()):
+            if isinstance(m, nn.Conv2d):
+                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
+                for i in range(m.out_channels):
+                    m.weight.data[i].normal_(0, math.sqrt(2. / n))
+                if m.bias is not None:
+                    m.bias.data.zero_()
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.weight.data.normal_(0, 0.01)
+                m.bias.data.zero_()
 
     def extract_features(self, x):
         x = self.backbone.features(x)
