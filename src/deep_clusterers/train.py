@@ -15,6 +15,7 @@ from src.deep_clusterers import models
 from src.deep_clusterers.pseudo_labels import reassign_labels
 from src.utils import checkpoint_utils
 from src.utils.pyutils import AverageMeter
+from src.utils.uni_sampler import UnifLabelSampler
 
 use_gpu = torch.cuda.is_available()
 
@@ -51,8 +52,10 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         dataset, kmeans_loss, acc, informational_acc = reassign_labels(model, dataset, deep_kmeans,
                                                                        debug_root=debug_root, epoch=epoch)
         model.train()
+        sampler = UnifLabelSampler(N=int(len(dataset) * 1.), images_lists=dataset.targets,
+                                   cluster_size=training_cfg.n_clusters)
         dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=True, num_workers=4,
-                                drop_last=True)
+                                drop_last=True, sampler=sampler)
         print('epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
         for data in tqdm(dataloader, total=len(dataset) / training_cfg.batch_size):
             img, y, _ = data
