@@ -65,7 +65,6 @@ class DeepKmeans(object):
                                                                       category_size=self.n_clusters,
                                                                       debug_root=self.debug_root, epoch=epoch)
         loss = clusterer.inertia_
-        print('KMeans Clustering Finished')
         if self.debug_root:
             prediction_path = os.path.join(self.debug_root, 'predictions_%s.json' % epoch)
             df.to_json(prediction_path, orient='records')
@@ -74,4 +73,6 @@ class DeepKmeans(object):
             prediction_df.to_json(predictions_after_calculation_path, orient='records')
             cluster_centers_path = os.path.join(self.debug_root, 'cluster_centers_%s.npy' % epoch)
             np.save(cluster_centers_path, self.current_cluster_centers_)
-        return assign_labels, loss, acc, informational_acc
+        if self.assign:
+            return assign_labels, loss, acc, informational_acc
+        return labels, loss, acc, informational_acc

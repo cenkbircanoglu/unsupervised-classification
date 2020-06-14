@@ -26,5 +26,4 @@ def reassign_labels(model, dataset, deep_kmeans, pca_components=None, debug_root
             })
     labels, loss, acc, informational_acc = deep_kmeans.cluster(features, filenames, epoch=epoch)
     dataset.targets = labels
-    print('Features Creating Finished')
     return dataset, loss, acc, informational_acc

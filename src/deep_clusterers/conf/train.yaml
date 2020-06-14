@@ -10,18 +10,18 @@ dataset:
   image_root_folder: ./datasets/mnist/raw/
   groundtruth_label_file: ./datasets/mnist/cls_labels.npy
   label_file: ./datasets/mnist/cls_labels.npy
-  sample_size: 128
+  sample_size: 10
   name: fashion_mnist
 model:
   name: MobileNet
 training:
   log_file: logs/losses.log
   checkpoint: checkpoints/model.pth
-  batch_size: 128
-  num_epochs: 10
+  batch_size: 10
+  num_epochs: 4
   n_clusters: 10
   img_size: 32
-  reassign: 4
+  reassign: 1
   assign: True
   optimizer:
     name: sgd
