@@ -74,7 +74,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
                                    cluster_size=training_cfg.n_clusters)
         dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=4,
                                 drop_last=True, sampler=sampler)
-        print('epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
+        print('Epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
         for data in tqdm(dataloader, total=int(len(dataset) * training_cfg.reassign / training_cfg.batch_size)):
             img, y, filename = data
             if use_gpu:
@@ -106,7 +106,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
                 correct += (predicted == y).sum().item()
 
         log = 'Epoch [%s/%s],\tLoss:%s,\tKmeans loss:%s\t' \
-              'Acc:%s\tInformational acc:%s\tNetwork Acc:%s' % (epoch, training_cfg.num_epochs,
+              'Acc:%s\tInformational acc:%s\tNetwork Acc:%s\n' % (epoch, training_cfg.num_epochs,
                                                                 losses.get('loss_%s' % epoch),
                                                                 kmeans_loss, acc, informational_acc,
                                                                 (100 * correct / total))
