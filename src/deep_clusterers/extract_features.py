@@ -16,7 +16,7 @@ def extract_features(model, dataset, debug_root=None, epoch=None, batch_size=128
         'features': [],
         'filenames': []
     }
-    for img, _, filename in tqdm(dataloader, total=len(dataset) / batch_size):
+    for img, _, filename in tqdm(dataloader, total=int(len(dataset) / batch_size)):
         if use_gpu:
             img = Variable(img).cuda(non_blocking=True)
         feature = model.extract_features(img).cpu().detach().numpy()
