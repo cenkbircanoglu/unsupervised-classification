@@ -52,8 +52,8 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         )
     else:
         optimizer = torch.optim.Adam(model.parameters(),
-                                     lr=training_cfg.lr,
-                                     weight_decay=10 ** training_cfg.wd
+                                     lr=training_cfg.optimizer.lr,
+                                     weight_decay=10 ** training_cfg.optimizer.wd
                                      )
     losses = AverageMeter()
     os.makedirs(os.path.dirname(training_cfg.log_file), exist_ok=True)
