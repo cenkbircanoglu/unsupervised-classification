@@ -3,7 +3,7 @@
 
 ### TODO List
 
-- [ ] Create a script to download Fashion MNIST Dataset
+- [x] Create a script to download Fashion MNIST Dataset
 - [ ] Add Fastest Model to extract features which can support classification
 - [ ] Implement KMeans Clustering from features
 - [ ] Create test scripts from KMeans Results

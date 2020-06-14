@@ -1,13 +1,12 @@
 
 
 
-
+With the scripts below, the raw images downloaded and also `id-label` dictionary stored in `cls_label.npy`. 
 ### Download Fashion MNIST Dataset
 
 ```bash
 sh scripts/datasets/download_fashion_mnist.sh
 ```
-
 
 ### Download MNIST Dataset
 

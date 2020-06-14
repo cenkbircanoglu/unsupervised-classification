@@ -1,0 +1,6 @@
+hydra:
+  run:
+    dir: .
+dataset:
+  image_root_folder: ./datasets/fashion_mnist/raw/images/
+  label_file: ./datasets/fashion_mnist/cls_labels.npy
