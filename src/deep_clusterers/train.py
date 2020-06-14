@@ -57,7 +57,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=1,
                                 drop_last=True, sampler=sampler)
         print('epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
-        for data in tqdm(dataloader, total=len(dataset) / training_cfg.batch_size):
+        for data in tqdm(dataloader, total=int(len(dataset) * training_cfg.reassign / training_cfg.batch_size)):
             img, y, _ = data
             if use_gpu:
                 img = Variable(img).cuda(non_blocking=True)
