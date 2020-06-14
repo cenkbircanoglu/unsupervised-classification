@@ -69,12 +69,12 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
             loss.backward()
             optimizer.step()
         # ===================log========================
-        log = 'epoch [{}/{}],\tloss:%s,\tkmeans loss:%s\tacc:%s\tinformational acc:%s\n'.format(epoch,
-                                                                                                training_cfg.num_epochs,
-                                                                                                losses.get(
-                                                                                                    'loss_%s' % epoch),
-                                                                                                kmeans_loss, acc,
-                                                                                                informational_acc)
+        log = 'epoch [%s/%s],\tloss:%s,\tkmeans loss:%s\tacc:%s\tinformational acc:%s\n' % (epoch,
+                                                                                            training_cfg.num_epochs,
+                                                                                            losses.get(
+                                                                                                'loss_%s' % epoch),
+                                                                                            kmeans_loss, acc,
+                                                                                            informational_acc)
         print(log)
 
         with open(training_cfg.log_file, mode='a') as f:
