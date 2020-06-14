@@ -22,4 +22,9 @@ training:
   n_clusters: 10
   img_size: 32
   reassign: 4
+  optimizer:
+    name: sgd
+    lr: 0.05
+    momentum: 0.9
+    wd: -5
 debug_root: debug/

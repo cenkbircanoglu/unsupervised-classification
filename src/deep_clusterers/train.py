@@ -23,7 +23,6 @@ use_gpu = torch.cuda.is_available()
 def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     image_root_folder = os.path.join(utils.get_original_cwd(), dataset_cfg.image_root_folder)
     groundtruth_label_file = os.path.join(utils.get_original_cwd(), dataset_cfg.groundtruth_label_file)
-    learning_rate = 1e-3
 
     img_transform = transforms.Compose([
         transforms.Resize((training_cfg.img_size, training_cfg.img_size)),
@@ -44,7 +43,18 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
 
     model.train()
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
+    if training_cfg.optimizer.name == 'sgd':
+        optimizer = torch.optim.SGD(
+            model.parameters(),
+            lr=training_cfg.optimizer.lr,
+            momentum=training_cfg.optimizer.momentum,
+            weight_decay=10 ** training_cfg.optimizer.wd
+        )
+    else:
+        optimizer = torch.optim.Adam(model.parameters(),
+                                     lr=training_cfg.lr,
+                                     weight_decay=10 ** training_cfg.wd
+                                     )
     losses = AverageMeter()
     os.makedirs(os.path.dirname(training_cfg.log_file), exist_ok=True)
     os.makedirs(debug_root, exist_ok=True)
