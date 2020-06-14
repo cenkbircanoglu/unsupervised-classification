@@ -14,6 +14,7 @@ dataset:
   name: fashion_mnist
 model:
   name: MobileNet
+  initialize: True
 training:
   log_file: logs/losses.log
   checkpoint: checkpoints/model.pth

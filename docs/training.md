@@ -21,6 +21,8 @@ python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_siz
 
 python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=1024 training.num_epochs=1000 training.assign=True training.reassign=1
 python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=1024 training.num_epochs=1000 training.assign=False training.reassign=1
+python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=1024 training.num_epochs=1000 training.assign=True training.reassign=1 model.initialize=True
+python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=1024 training.num_epochs=1000 training.assign=False training.reassign=1 model.initialize=False
 python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=1024 training.num_epochs=1000 training.assign=True training.reassign=1 training.optimizer.name=adam
 python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=1024 training.num_epochs=1000 training.assign=False training.reassign=1 training.optimizer.name=adam
 python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=1024 training.num_epochs=1000 training.assign=True training.reassign=1 training.n_clusters=20

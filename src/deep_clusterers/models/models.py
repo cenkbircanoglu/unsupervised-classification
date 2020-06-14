@@ -8,12 +8,14 @@ from src.deep_clusterers.models import resnet
 
 
 class DeepClusterer(nn.Module):
-    def __init__(self, backbone, last_channel=1280, num_classes=None, **kwargs):
+    def __init__(self, backbone, last_channel=1280, num_classes=None, initialize=False, **kwargs):
         super(DeepClusterer, self).__init__()
+        print(initialize)
         self.backbone = backbone
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(last_channel, num_classes)
-        self._initialize_weights()
+        if initialize:
+            self._initialize_weights()
 
     def _initialize_weights(self):
         for y, m in enumerate(self.modules()):
@@ -45,40 +47,40 @@ class DeepClusterer(nn.Module):
         return x
 
 
-def MobileNet(**kwargs):
+def MobileNet(initialize=None, **kwargs):
     model = models.mobilenet_v2(**kwargs)
     last_channel = 1280
-    return DeepClusterer(model, last_channel=last_channel, **kwargs)
+    return DeepClusterer(model, last_channel=last_channel, initialize=initialize, **kwargs)
 
 
-def ResNet18(**kwargs):
+def ResNet18(initialize=None, **kwargs):
     model = resnet.resnet18(**kwargs)
     last_channel = 512
-    return DeepClusterer(model, last_channel=last_channel, **kwargs)
+    return DeepClusterer(model, last_channel=last_channel, initialize=initialize, **kwargs)
 
 
-def ResNet34(**kwargs):
+def ResNet34(initialize=None, **kwargs):
     model = resnet.resnet34(**kwargs)
     last_channel = 512
-    return DeepClusterer(model, last_channel=last_channel, **kwargs)
+    return DeepClusterer(model, last_channel=last_channel, initialize=initialize, **kwargs)
 
 
-def ResNet50(**kwargs):
+def ResNet50(initialize=None, **kwargs):
     model = resnet.resnet50(**kwargs)
     last_channel = 2048
-    return DeepClusterer(model, last_channel=last_channel, **kwargs)
+    return DeepClusterer(model, last_channel=last_channel, initialize=initialize, **kwargs)
 
 
-def ResNet101(**kwargs):
+def ResNet101(initialize=None, **kwargs):
     model = resnet.resnet101(**kwargs)
     last_channel = 2048
-    return DeepClusterer(model, last_channel=last_channel, **kwargs)
+    return DeepClusterer(model, last_channel=last_channel, initialize=initialize, **kwargs)
 
 
-def ResNet152(**kwargs):
+def ResNet152(initialize=None, **kwargs):
     model = resnet.resnet152(**kwargs)
     last_channel = 2048
-    return DeepClusterer(model, last_channel=last_channel, **kwargs)
+    return DeepClusterer(model, last_channel=last_channel, initialize=initialize, **kwargs)
 
 
 if __name__ == "__main__":

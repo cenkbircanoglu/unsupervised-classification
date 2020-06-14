@@ -40,7 +40,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     dataset = CustomImageFolder(image_root_folder, transform=img_transform,
                                 sample_size=dataset_cfg.sample_size)
 
-    model = models.__dict__[model_cfg.name](num_classes=training_cfg.n_clusters)
+    model = models.__dict__[model_cfg.name](num_classes=training_cfg.n_clusters, initialize=model_cfg.initialize)
 
     model, already_trained_epoch = checkpoint_utils.load_latest_checkpoint(model, training_cfg.checkpoint, use_gpu)
     if use_gpu:
@@ -107,9 +107,9 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
 
         log = 'Epoch [%s/%s],\tLoss:%s,\tKmeans loss:%s\t' \
               'Acc:%s\tInformational acc:%s\tNetwork Acc:%s\n' % (epoch, training_cfg.num_epochs,
-                                                                losses.get('loss_%s' % epoch),
-                                                                kmeans_loss, acc, informational_acc,
-                                                                (100 * correct / total))
+                                                                  losses.get('loss_%s' % epoch),
+                                                                  kmeans_loss, acc, informational_acc,
+                                                                  (100 * correct / total))
         print(log)
         with open(training_cfg.log_file, mode='a') as f:
             f.write(log)
