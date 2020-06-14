@@ -52,9 +52,9 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         dataset, kmeans_loss, acc, informational_acc = reassign_labels(model, dataset, deep_kmeans,
                                                                        debug_root=debug_root, epoch=epoch)
         model.train()
-        sampler = UnifLabelSampler(N=int(len(dataset) * 1.), images_lists=dataset.targets,
+        sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
-        dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=4,
+        dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=1,
                                 drop_last=True, sampler=sampler)
         print('epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
         for data in tqdm(dataloader, total=len(dataset) / training_cfg.batch_size):

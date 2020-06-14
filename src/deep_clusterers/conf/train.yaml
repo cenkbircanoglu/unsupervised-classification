@@ -21,4 +21,5 @@ training:
   num_epochs: 10
   n_clusters: 10
   img_size: 32
+  reassign: 4
 debug_root: debug/

@@ -25,7 +25,7 @@ class DeepKmeans(object):
         X = X / row_sums[:, np.newaxis]
         return X
 
-    def assign_labels_according_to_previous_centroids(self, labels):
+    def assign_labels_according_to_previous_centroids(self, labels, epoch=None):
         if len(self.previous_cluster_centers_) == 0:
             return labels
         dist = euclidean_distances(self.previous_cluster_centers_, self.current_cluster_centers_)
@@ -37,12 +37,15 @@ class DeepKmeans(object):
             mapping.append((i, j))
             dist[i] = np.inf
             dist[:, j] = np.inf
-        indices_map = {}
+        new_labels = labels.copy()
+
         for previous_l, new_l in mapping:
-            indices_map[previous_l] = np.where(labels == new_l)
-        for label, indices in indices_map.items():
-            labels[indices] = label
-        return labels
+            indices = np.where(labels == new_l)
+            new_labels[indices] = previous_l
+        if self.debug_root:
+            labels_path = os.path.join(self.debug_root, 'labels_%s.npy' % epoch)
+            np.save(labels_path, mapping)
+        return new_labels
 
     def cluster(self, X, filenames, epoch=None):
         print('KMeans Clustering Started')
@@ -52,8 +55,8 @@ class DeepKmeans(object):
         clusterer = clusterer.fit(X)
         self.current_cluster_centers_ = clusterer.cluster_centers_
         labels = clusterer.labels_
-        labels = self.assign_labels_according_to_previous_centroids(labels)
-        df = pd.DataFrame({'img_name': filenames, 'prediction': labels})
+        assign_labels = self.assign_labels_according_to_previous_centroids(labels, epoch=epoch)
+        df = pd.DataFrame({'img_name': filenames, 'prediction': labels, 'assign_labels': assign_labels})
         acc, informational_acc, prediction_df, _ = calculate_accuracy(df, self.groundtruth_path,
                                                                       category_size=self.n_clusters,
                                                                       debug_root=self.debug_root, epoch=epoch)
@@ -61,7 +64,10 @@ class DeepKmeans(object):
         print('KMeans Clustering Finished')
         if self.debug_root:
             prediction_path = os.path.join(self.debug_root, 'predictions_%s.json' % epoch)
+            df.to_json(prediction_path, orient='records')
+            predictions_after_calculation_path = os.path.join(self.debug_root,
+                                                              'predictions_after_calculation_%s.json' % epoch)
+            prediction_df.to_json(predictions_after_calculation_path, orient='records')
             cluster_centers_path = os.path.join(self.debug_root, 'cluster_centers_%s.npy' % epoch)
-            prediction_df.to_json(prediction_path, orient='records')
             np.save(cluster_centers_path, self.current_cluster_centers_)
-        return labels, loss, acc, informational_acc
+        return assign_labels, loss, acc, informational_acc
