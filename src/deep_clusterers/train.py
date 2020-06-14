@@ -54,7 +54,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * 1.), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
-        dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=True, num_workers=4,
+        dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=4,
                                 drop_last=True, sampler=sampler)
         print('epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
         for data in tqdm(dataloader, total=len(dataset) / training_cfg.batch_size):
