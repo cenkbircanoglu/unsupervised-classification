@@ -46,7 +46,8 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     if use_gpu:
         model = model.cuda()
     deep_kmeans = DeepKmeans(groundtruth_label_file, n_clusters=training_cfg.n_clusters,
-                             debug_root=debug_root, assign=training_cfg.assign)
+                             debug_root=debug_root, assign=training_cfg.assign,
+                             assign_real_labels=training_cfg.assign_real_labels)
 
     model.train()
     criterion = nn.CrossEntropyLoss()
@@ -68,7 +69,8 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     for epoch in range(already_trained_epoch + 1, training_cfg.num_epochs):
         dataset, kmeans_loss, acc, informational_acc = reassign_labels(model, dataset, deep_kmeans,
                                                                        debug_root=debug_root, epoch=epoch,
-                                                                       batch_size=training_cfg.batch_size)
+                                                                       batch_size=training_cfg.batch_size,
+                                                                       assign_real_labels=training_cfg.assign_real_labels)
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)

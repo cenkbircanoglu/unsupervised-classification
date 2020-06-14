@@ -6,19 +6,21 @@ import torch
 from sklearn.cluster import KMeans
 from sklearn.metrics import euclidean_distances
 
-from src.clusterers.calculate_accuracy import calculate_accuracy
+from src.clusterers.calculate_accuracy import calculate_accuracy, load_groundtruth
 
 use_gpu = torch.cuda.is_available()
 
 
 class DeepKmeans(object):
-    def __init__(self, groundtruth_path, n_clusters=100, debug_root=None, assign=False):
+    def __init__(self, groundtruth_path, n_clusters=100, debug_root=None, assign=False, assign_real_labels=False):
         self.current_cluster_centers_ = []
         self.previous_cluster_centers_ = []
         self.n_clusters = n_clusters
         self.groundtruth_path = groundtruth_path
         self.debug_root = debug_root
         self.assign = assign
+        if assign_real_labels:
+            self.real_labels = load_groundtruth(groundtruth_path)
 
     @staticmethod
     def l2_normalization(X):

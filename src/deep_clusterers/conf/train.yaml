@@ -24,6 +24,7 @@ training:
   img_size: 32
   reassign: 4
   assign: True
+  assign_real_labels: False
   optimizer:
     name: sgd
     lr: 0.05

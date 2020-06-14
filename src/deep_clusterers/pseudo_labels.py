@@ -10,8 +10,14 @@ use_gpu = torch.cuda.is_available()
 
 
 def reassign_labels(model, dataset, deep_kmeans, pca_components=None, debug_root=None, epoch=None,
-                    batch_size=128):
+                    batch_size=128, assign_real_labels=False):
     print('Features Creating Started')
+    if assign_real_labels:
+        filenames = [i[0].split('/')[-1].replace('.jpg', '') for i in dataset.samples]
+        real_labels = deep_kmeans.real_labels
+        labels = [real_labels[real_labels['img_name'] == i]['label'].item()[0] for i in filenames]
+        dataset.targets = labels
+        return dataset, 0, 0, 0
     feature_filename_dict = extract_features(model, dataset, debug_root=debug_root, epoch=epoch, batch_size=batch_size)
     features = np.array(feature_filename_dict['features'])
     filenames = feature_filename_dict['filenames']
