@@ -18,7 +18,7 @@ training:
   log_file: logs/losses.log
   checkpoint: checkpoints/model.pth
   batch_size: 128
-  num_epochs: 100
-  n_clusters: 100
+  num_epochs: 10
+  n_clusters: 10
   img_size: 32
 debug_root: debug/
