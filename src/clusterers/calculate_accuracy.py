@@ -25,7 +25,6 @@ def calculate_accuracy(df, groundtruth_path, category_size=20, debug_root=None, 
     category_mapping = json.loads(max_df[['prediction', 'label']].to_json(orient='records'))
     acc = max_df['size'].sum() / len(exploded_df)
     informational_acc = (acc * max_df['label'].nunique() / category_size)
-    print(acc, informational_acc)
     if debug_root:
         accuracy_path = os.path.join(debug_root, 'accuracy_%s.json' % epoch)
         df.to_json(accuracy_path, orient='records')
