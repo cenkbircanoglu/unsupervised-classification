@@ -52,7 +52,7 @@ class DeepKmeans(object):
         print('KMeans Clustering Started')
         self.previous_cluster_centers_ = self.current_cluster_centers_
         X = self.l2_normalization(X)
-        clusterer = KMeans(n_clusters=self.n_clusters, max_iter=1000, random_state=10)
+        clusterer = KMeans(n_clusters=self.n_clusters, max_iter=1000)
         clusterer = clusterer.fit(X)
         self.current_cluster_centers_ = clusterer.cluster_centers_
         labels = clusterer.labels_

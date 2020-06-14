@@ -1,6 +1,7 @@
 import os
 
 import hydra
+import numpy as np
 import torch
 from hydra import utils
 from torch import nn
@@ -18,6 +19,12 @@ from src.utils.pyutils import AverageMeter
 from src.utils.uni_sampler import UnifLabelSampler
 
 use_gpu = torch.cuda.is_available()
+seed = 7
+torch.manual_seed(7)
+np.random.seed(7)
+
+if use_gpu:
+    torch.cuda.manual_seed_all(7)
 
 
 def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
