@@ -2,3 +2,5 @@ hydra-core
 tqdm
 pandas
 scikit-learn
+torch
+torchvision
