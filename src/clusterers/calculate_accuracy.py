@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 import pandas as pd
@@ -15,16 +16,20 @@ def load_groundtruth(path):
     return df
 
 
-def calculate_accuracy(df, groundtruth_path, category_size=20, debug_root=None):
+def calculate_accuracy(df, groundtruth_path, category_size=20, debug_root=None, epoch=None):
     label_df = load_groundtruth(groundtruth_path)
     df = pd.merge(df, label_df, on=['img_name'])
     exploded_df = df[['img_name', 'prediction', 'label']].explode('label')
     grouped_count_df = exploded_df.groupby(['prediction', 'label']).size().to_frame('size').reset_index()
-    max_df = grouped_count_df.groupby('prediction').max().reset_index()
+    max_df = grouped_count_df.iloc[grouped_count_df.groupby('prediction')['size'].idxmax()]
     category_mapping = json.loads(max_df[['prediction', 'label']].to_json(orient='records'))
     acc = max_df['size'].sum() / len(exploded_df)
     informational_acc = (acc * max_df['label'].nunique() / category_size)
     print(acc, informational_acc)
     if debug_root:
-        df.to_json(debug_root)
+        accuracy_path = os.path.join(debug_root, 'accuracy_%s.json' % epoch)
+        df.to_json(accuracy_path, orient='records')
+        mapping_path = os.path.join(debug_root, 'mapping_%s.json' % epoch)
+        max_df[['prediction', 'label']].to_json(mapping_path, orient='records')
+
     return acc, informational_acc, df, category_mapping

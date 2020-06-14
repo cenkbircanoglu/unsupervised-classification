@@ -55,7 +55,8 @@ class DeepKmeans(object):
         labels = self.assign_labels_according_to_previous_centroids(labels)
         df = pd.DataFrame({'img_name': filenames, 'prediction': labels})
         acc, informational_acc, prediction_df, _ = calculate_accuracy(df, self.groundtruth_path,
-                                                                      category_size=self.n_clusters)
+                                                                      category_size=self.n_clusters,
+                                                                      debug_root=self.debug_root, epoch=epoch)
         loss = clusterer.inertia_
         print('KMeans Clustering Finished')
         if self.debug_root:
