@@ -10,7 +10,6 @@ from src.deep_clusterers.models import resnet
 class DeepClusterer(nn.Module):
     def __init__(self, backbone, last_channel=1280, num_classes=None, initialize=False, **kwargs):
         super(DeepClusterer, self).__init__()
-        print(initialize)
         self.backbone = backbone
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(last_channel, num_classes)
