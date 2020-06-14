@@ -1,0 +1,24 @@
+hydra:
+  job:
+    config:
+      # configuration for the ${hydra.job.override_dirname} runtime variable
+      override_dirname:
+        kv_sep: '='
+        item_sep: ','
+        exclude_keys: []
+dataset:
+  image_root_folder: ./datasets/mnist/raw/
+  groundtruth_label_file: ./datasets/mnist/cls_labels.npy
+  label_file: ./datasets/mnist/cls_labels.npy
+  sample_size: 128
+  name: fashion_mnist
+model:
+  name: MobileNet
+training:
+  log_file: logs/losses.log
+  checkpoint: checkpoints/model.pth
+  batch_size: 128
+  num_epochs: 100
+  n_clusters: 100
+  img_size: 32
+debug_root: debug/

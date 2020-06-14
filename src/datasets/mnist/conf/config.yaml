@@ -2,5 +2,5 @@ hydra:
   run:
     dir: .
 dataset:
-  image_root_folder: ./datasets/mnist/raw/images/
+  image_root_folder: ./datasets/mnist/raw/
   label_file: ./datasets/mnist/cls_labels.npy
