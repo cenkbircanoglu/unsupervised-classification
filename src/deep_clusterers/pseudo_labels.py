@@ -9,9 +9,10 @@ from src.deep_clusterers.extract_features import extract_features
 use_gpu = torch.cuda.is_available()
 
 
-def reassign_labels(model, dataset, deep_kmeans, pca_components=None, debug_root=None, epoch=None):
+def reassign_labels(model, dataset, deep_kmeans, pca_components=None, debug_root=None, epoch=None,
+                    batch_size=128):
     print('Features Creating Started')
-    feature_filename_dict = extract_features(model, dataset, debug_root=debug_root, epoch=epoch)
+    feature_filename_dict = extract_features(model, dataset, debug_root=debug_root, epoch=epoch, batch_size=batch_size)
     features = np.array(feature_filename_dict['features'])
     filenames = feature_filename_dict['filenames']
     if pca_components:

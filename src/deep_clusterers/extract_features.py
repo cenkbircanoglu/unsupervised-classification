@@ -9,8 +9,7 @@ from tqdm import tqdm
 use_gpu = torch.cuda.is_available()
 
 
-def extract_features(model, dataset, debug_root=None, epoch=None):
-    batch_size = 1
+def extract_features(model, dataset, debug_root=None, epoch=None, batch_size=128):
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=1, drop_last=False)
     model.eval()
     data = {
@@ -20,9 +19,9 @@ def extract_features(model, dataset, debug_root=None, epoch=None):
     for img, _, filename in tqdm(dataloader, total=len(dataset) / batch_size):
         if use_gpu:
             img = Variable(img).cuda(non_blocking=True)
-        feature = model.extract_features(img).cpu().detach().numpy()[0]
-        data['features'].append(feature)
-        data['filenames'].append(filename[0])
+        feature = model.extract_features(img).cpu().detach().numpy()
+        data['features'].extend(feature)
+        data['filenames'].extend(filename)
     if debug_root:
         feature_path = os.path.join(debug_root, 'features_%s.npy' % epoch)
         np.save(feature_path, data)

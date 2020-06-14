@@ -50,7 +50,8 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     os.makedirs(debug_root, exist_ok=True)
     for epoch in range(already_trained_epoch + 1, training_cfg.num_epochs):
         dataset, kmeans_loss, acc, informational_acc = reassign_labels(model, dataset, deep_kmeans,
-                                                                       debug_root=debug_root, epoch=epoch)
+                                                                       debug_root=debug_root, epoch=epoch,
+                                                                       batch_size=training_cfg.batch_size)
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
