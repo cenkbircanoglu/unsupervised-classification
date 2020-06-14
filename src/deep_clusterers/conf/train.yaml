@@ -22,6 +22,7 @@ training:
   n_clusters: 10
   img_size: 32
   reassign: 4
+  assign: True
   optimizer:
     name: sgd
     lr: 0.05

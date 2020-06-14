@@ -39,7 +39,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     if use_gpu:
         model = model.cuda()
     deep_kmeans = DeepKmeans(groundtruth_label_file, n_clusters=training_cfg.n_clusters,
-                             debug_root=debug_root)
+                             debug_root=debug_root, assign=training_cfg.assign)
 
     model.train()
     criterion = nn.CrossEntropyLoss()

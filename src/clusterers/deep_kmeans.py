@@ -12,12 +12,13 @@ use_gpu = torch.cuda.is_available()
 
 
 class DeepKmeans(object):
-    def __init__(self, groundtruth_path, n_clusters=100, debug_root=None):
+    def __init__(self, groundtruth_path, n_clusters=100, debug_root=None, assign=False):
         self.current_cluster_centers_ = []
         self.previous_cluster_centers_ = []
         self.n_clusters = n_clusters
         self.groundtruth_path = groundtruth_path
         self.debug_root = debug_root
+        self.assign = assign
 
     @staticmethod
     def l2_normalization(X):
@@ -56,7 +57,10 @@ class DeepKmeans(object):
         self.current_cluster_centers_ = clusterer.cluster_centers_
         labels = clusterer.labels_
         assign_labels = self.assign_labels_according_to_previous_centroids(labels, epoch=epoch)
-        df = pd.DataFrame({'img_name': filenames, 'prediction': labels, 'assign_labels': assign_labels})
+        if self.assign:
+            df = pd.DataFrame({'img_name': filenames, 'prediction': assign_labels, 'kmeans_labels': labels})
+        else:
+            df = pd.DataFrame({'img_name': filenames, 'prediction': labels, 'assign_labels': assign_labels})
         acc, informational_acc, prediction_df, _ = calculate_accuracy(df, self.groundtruth_path,
                                                                       category_size=self.n_clusters,
                                                                       debug_root=self.debug_root, epoch=epoch)
