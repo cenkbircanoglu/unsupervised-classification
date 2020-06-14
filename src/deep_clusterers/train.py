@@ -65,7 +65,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
-        dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=1,
+        dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=4,
                                 drop_last=True, sampler=sampler)
         print('epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
         for data in tqdm(dataloader, total=int(len(dataset) * training_cfg.reassign / training_cfg.batch_size)):
@@ -83,14 +83,27 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
             loss.backward()
             optimizer.step()
         # ===================log========================
-        log = 'epoch [%s/%s],\tloss:%s,\tkmeans loss:%s\tacc:%s\tinformational acc:%s\n' % (epoch,
-                                                                                            training_cfg.num_epochs,
-                                                                                            losses.get(
-                                                                                                'loss_%s' % epoch),
-                                                                                            kmeans_loss, acc,
-                                                                                            informational_acc)
-        print(log)
+        correct = 0
+        total = 0
+        with torch.no_grad():
+            dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=4,
+                                    drop_last=True)
+            for data in dataloader:
+                img, y, _ = data
+                if use_gpu:
+                    img = Variable(img).cuda(non_blocking=True)
+                    y = y.cuda(non_blocking=True)
+                y_hat = model(img)
+                _, predicted = torch.max(y_hat.data, 1)
+                total += y.size(0)
+                correct += (predicted == y).sum().item()
 
+        log = 'Epoch [%s/%s],\tLoss:%s,\tKmeans loss:%s\t' \
+              'Acc:%s\tInformational acc:%s\tNetwork Acc:%s' % (epoch, training_cfg.num_epochs,
+                                                                losses.get('loss_%s' % epoch),
+                                                                kmeans_loss, acc, informational_acc,
+                                                                (100 * correct / total))
+        print(log)
         with open(training_cfg.log_file, mode='a') as f:
             f.write(log)
         if epoch % 5 == 0:
