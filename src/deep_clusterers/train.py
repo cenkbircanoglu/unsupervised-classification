@@ -84,6 +84,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
             lr=training_cfg.optimizer.lr,
             weight_decay=10 ** training_cfg.optimizer.wd,
         )
+        model.cuda()
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
