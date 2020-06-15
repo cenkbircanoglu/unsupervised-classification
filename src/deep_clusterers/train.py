@@ -58,6 +58,11 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
             momentum=training_cfg.optimizer.momentum,
             weight_decay=10 ** training_cfg.optimizer.wd
         )
+    elif training_cfg.optimizer.name == 'sgd_basic':
+        optimizer = torch.optim.SGD(
+            model.parameters(),
+            lr=training_cfg.optimizer.lr
+        )
     else:
         optimizer = torch.optim.Adam(model.parameters(),
                                      lr=training_cfg.optimizer.lr,

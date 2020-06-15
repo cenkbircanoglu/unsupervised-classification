@@ -26,8 +26,8 @@ training:
   assign: True
   assign_real_labels: False
   optimizer:
-    name: sgd
-    lr: 0.05
+    name: sgd_basic
+    lr: 0.01
     momentum: 0.9
     wd: -5
 debug_root: debug/
