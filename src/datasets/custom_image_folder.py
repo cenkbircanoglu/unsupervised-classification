@@ -16,6 +16,11 @@ class CustomImageFolder(ImageFolder):
         if sample_size:
             self.imgs = self.imgs[:sample_size]
             self.samples = self.samples[:sample_size]
+            self.targets = self.targets[:sample_size]
+        self.ori_labels = self.targets
+
+    def set_pseudo_labels(self, pseudo_labels):
+        self.targets = pseudo_labels
 
     def __getitem__(self, index):
         """

@@ -23,11 +23,12 @@ training:
   n_clusters: 10
   img_size: 32
   reassign: 4
-  assign: False
-  assign_real_labels: False
+  use_original_labels: False
   optimizer:
-    name: sgd_basic
-    lr: 0.01
+    name: sgd
+    lr: 0.05
     momentum: 0.9
     wd: -5
+  pca:
+    component_size: None
 debug_root: debug/

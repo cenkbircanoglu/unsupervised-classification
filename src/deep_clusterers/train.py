@@ -4,16 +4,18 @@ import hydra
 import numpy as np
 import torch
 from hydra import utils
+from sklearn.decomposition import PCA
 from torch import nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
 
+from src.clusterers.calculate_accuracy import calculate_accuracy
 from src.clusterers.deep_kmeans import DeepKmeans
 from src.datasets.custom_image_folder import CustomImageFolder
 from src.deep_clusterers import models
-from src.deep_clusterers.pseudo_labels import reassign_labels
+from src.deep_clusterers.extract_features import extract_features
 from src.utils import checkpoint_utils
 from src.utils.pyutils import AverageMeter
 from src.utils.uni_sampler import UnifLabelSampler
@@ -27,14 +29,20 @@ if use_gpu:
     torch.cuda.manual_seed_all(7)
 
 
+def apply_dimensionality_reduction(features, pca_components=None):
+    if pca_components is int:
+        pca = PCA(n_components=pca_components, whiten=True)
+        features = pca.fit_transform(features)
+    return features
+
+
 def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     image_root_folder = os.path.join(utils.get_original_cwd(), dataset_cfg.image_root_folder)
-    groundtruth_label_file = os.path.join(utils.get_original_cwd(), dataset_cfg.groundtruth_label_file)
 
     img_transform = transforms.Compose([
         transforms.Resize((training_cfg.img_size, training_cfg.img_size)),
         transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
 
     dataset = CustomImageFolder(image_root_folder, transform=img_transform,
@@ -45,9 +53,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     model, already_trained_epoch = checkpoint_utils.load_latest_checkpoint(model, training_cfg.checkpoint, use_gpu)
     if use_gpu:
         model = model.cuda()
-    deep_kmeans = DeepKmeans(groundtruth_label_file, n_clusters=training_cfg.n_clusters,
-                             debug_root=debug_root, assign=training_cfg.assign,
-                             assign_real_labels=training_cfg.assign_real_labels)
+    deep_kmeans = DeepKmeans(n_clusters=training_cfg.n_clusters)
 
     model.train()
     criterion = nn.CrossEntropyLoss()
@@ -58,11 +64,6 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
             momentum=training_cfg.optimizer.momentum,
             weight_decay=10 ** training_cfg.optimizer.wd
         )
-    elif training_cfg.optimizer.name == 'sgd_basic':
-        optimizer = torch.optim.SGD(
-            model.parameters(),
-            lr=training_cfg.optimizer.lr
-        )
     else:
         optimizer = torch.optim.Adam(model.parameters(),
                                      lr=training_cfg.optimizer.lr,
@@ -72,27 +73,32 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     losses = AverageMeter()
     os.makedirs(os.path.dirname(training_cfg.log_file), exist_ok=True)
     os.makedirs(debug_root, exist_ok=True)
-    for epoch in range(already_trained_epoch + 1, training_cfg.num_epochs):
-        dataset, kmeans_loss, acc, informational_acc = reassign_labels(model, dataset, deep_kmeans,
-                                                                       debug_root=debug_root, epoch=epoch,
-                                                                       batch_size=training_cfg.batch_size,
-                                                                       assign_real_labels=training_cfg.assign_real_labels)
 
+    for epoch in range(already_trained_epoch, training_cfg.num_epochs):
+        features = extract_features(model, dataset, batch_size=training_cfg.batch_size)
+        features = apply_dimensionality_reduction(features, pca_components=training_cfg.pca.component_size)
+
+        pseudo_labels, kmeans_loss = deep_kmeans.cluster(features)
+        if not training_cfg.use_original_labels:
+            dataset.set_pseudo_labels(pseudo_labels)
+        acc, informational_acc, category_mapping = calculate_accuracy(dataset.ori_labels, pseudo_labels)
+        print('Classification Acc:%s\tInformational Acc:%s\n' % (acc, informational_acc))
         model.reinitialize_fc()
         optimizer_tl = torch.optim.SGD(
             model.fc.parameters(),
             lr=training_cfg.optimizer.lr,
             weight_decay=10 ** training_cfg.optimizer.wd,
         )
-        model.cuda()
+        if use_gpu:
+            model.cuda()
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
         dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=4,
-                                drop_last=True, sampler=sampler)
+                                drop_last=False, sampler=sampler)
         print('Epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
         for data in tqdm(dataloader, total=int(len(dataset) * training_cfg.reassign / training_cfg.batch_size)):
-            img, y, filename = data
+            img, y, _ = data
             if use_gpu:
                 img = Variable(img).cuda(non_blocking=True)
                 y = y.cuda(non_blocking=True)
