@@ -16,6 +16,10 @@ class DeepClusterer(nn.Module):
         if initialize:
             self._initialize_weights()
 
+    def reinitialize_fc(self):
+        self.fc.weight.data.normal_(0, 0.01)
+        self.fc.bias.data.zero_()
+
     def _initialize_weights(self):
         for y, m in enumerate(self.modules()):
             if isinstance(m, nn.Conv2d):

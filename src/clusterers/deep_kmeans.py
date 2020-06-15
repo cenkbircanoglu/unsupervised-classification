@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import torch
 from sklearn.cluster import KMeans
-from sklearn.metrics import euclidean_distances
+from sklearn.metrics import euclidean_distances, normalized_mutual_info_score
 
 from src.clusterers.calculate_accuracy import calculate_accuracy, load_groundtruth
 
@@ -21,6 +21,7 @@ class DeepKmeans(object):
         self.assign = assign
         if assign_real_labels:
             self.real_labels = load_groundtruth(groundtruth_path)
+        self.previous_labels = None
 
     @staticmethod
     def l2_normalization(X):
@@ -57,7 +58,15 @@ class DeepKmeans(object):
         clusterer = KMeans(n_clusters=self.n_clusters, max_iter=1000)
         clusterer = clusterer.fit(X)
         self.current_cluster_centers_ = clusterer.cluster_centers_
+
         labels = clusterer.labels_
+        if self.previous_labels is not None:
+            nmi = normalized_mutual_info_score(
+                self.previous_labels,
+                labels
+            )
+            print('NMI against previous assignment: {0:.3f}'.format(nmi))
+        self.previous_labels = labels
         assign_labels = self.assign_labels_according_to_previous_centroids(labels, epoch=epoch)
         if self.assign:
             df = pd.DataFrame({'img_name': filenames, 'prediction': assign_labels, 'kmeans_labels': labels})
