@@ -33,5 +33,12 @@ def reassign_labels(model, dataset, deep_kmeans, pca_components=None, debug_root
                 'filenames': filenames
             })
     labels, loss, acc, informational_acc = deep_kmeans.cluster(features, filenames, epoch=epoch)
+
+    if assign_real_labels and epoch == 1:
+        filenames = [i[0].split('/')[-1].replace('.jpg', '') for i in dataset.samples]
+        real_labels = deep_kmeans.real_labels
+        labels = [real_labels[real_labels['img_name'] == i]['label'].item()[0] for i in filenames]
+    elif assign_real_labels:
+        labels = dataset.targets
     dataset.targets = labels
     return dataset, loss, acc, informational_acc
