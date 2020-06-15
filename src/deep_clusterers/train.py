@@ -66,14 +66,11 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
     losses = AverageMeter()
     os.makedirs(os.path.dirname(training_cfg.log_file), exist_ok=True)
     os.makedirs(debug_root, exist_ok=True)
-    initialized = False
     for epoch in range(already_trained_epoch + 1, training_cfg.num_epochs):
-        if training_cfg.assign_real_labels and not initialized:
-            dataset, kmeans_loss, acc, informational_acc = reassign_labels(model, dataset, deep_kmeans,
-                                                                           debug_root=debug_root, epoch=epoch,
-                                                                           batch_size=training_cfg.batch_size,
-                                                                           assign_real_labels=training_cfg.assign_real_labels)
-            initialized = True
+        dataset, kmeans_loss, acc, informational_acc = reassign_labels(model, dataset, deep_kmeans,
+                                                                       debug_root=debug_root, epoch=epoch,
+                                                                       batch_size=training_cfg.batch_size,
+                                                                       assign_real_labels=training_cfg.assign_real_labels)
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
