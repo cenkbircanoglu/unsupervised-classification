@@ -81,7 +81,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         pseudo_labels, kmeans_loss = deep_kmeans.cluster(features)
         if not training_cfg.use_original_labels:
             dataset.set_pseudo_labels(pseudo_labels)
-        acc, informational_acc, category_mapping = calculate_accuracy(dataset.ori_labels, pseudo_labels)
+        acc, informational_acc, category_mapping = calculate_accuracy(dataset.ori_labels, dataset.targets)
         print('Classification Acc:%s\tInformational Acc:%s\n' % (acc, informational_acc))
         model.reinitialize_fc()
         optimizer_tl = torch.optim.SGD(
