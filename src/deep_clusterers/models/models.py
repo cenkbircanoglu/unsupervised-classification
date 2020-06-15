@@ -12,11 +12,14 @@ class DeepClusterer(nn.Module):
         super(DeepClusterer, self).__init__()
         self.backbone = backbone
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(last_channel, num_classes)
+        self.fc = None
+        self.last_channel = last_channel
+        self.num_classes = num_classes
         if initialize:
             self._initialize_weights()
 
     def reinitialize_fc(self):
+        self.fc = nn.Linear(self.last_channel, self.num_classes)
         self.fc.weight.data.normal_(0, 0.01)
         self.fc.bias.data.zero_()
 

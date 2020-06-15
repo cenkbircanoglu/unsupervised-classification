@@ -68,6 +68,7 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
                                      lr=training_cfg.optimizer.lr,
                                      weight_decay=10 ** training_cfg.optimizer.wd
                                      )
+
     losses = AverageMeter()
     os.makedirs(os.path.dirname(training_cfg.log_file), exist_ok=True)
     os.makedirs(debug_root, exist_ok=True)
@@ -76,6 +77,13 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
                                                                        debug_root=debug_root, epoch=epoch,
                                                                        batch_size=training_cfg.batch_size,
                                                                        assign_real_labels=training_cfg.assign_real_labels)
+
+        model.reinitialize_fc()
+        optimizer_tl = torch.optim.SGD(
+            model.fc.parameters(),
+            lr=training_cfg.optimizer.lr,
+            weight_decay=10 ** training_cfg.optimizer.wd,
+        )
         model.train()
         sampler = UnifLabelSampler(N=int(len(dataset) * training_cfg.reassign), images_lists=dataset.targets,
                                    cluster_size=training_cfg.n_clusters)
@@ -94,8 +102,10 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
             losses.add({'loss_%s' % epoch: loss.item() / img.size(0)})
             # ===================backward====================
             optimizer.zero_grad()
+            optimizer_tl.zero_grad()
             loss.backward()
             optimizer.step()
+            optimizer_tl.step()
         # ===================log========================
         correct = 0
         total = 0
