@@ -1,0 +1,7 @@
+dataset:
+  image_root_folder: ./datasets/fashion_mnist/images
+  groundtruth_label_file: ./datasets/fashion_mnist/cls_labels.npy
+  label_file: ./datasets/fashion_mnist/cls_labels.npy
+  sample_size: 128
+  name: fashion_mnist
+  img_size: 32

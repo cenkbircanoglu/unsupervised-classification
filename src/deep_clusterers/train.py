@@ -37,11 +37,11 @@ def apply_dimensionality_reduction(features, pca_components=None):
     return features
 
 
-def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
+def train(dataset_cfg, model_cfg, training_cfg):
     image_root_folder = os.path.join(utils.get_original_cwd(), dataset_cfg.image_root_folder)
 
     img_transform = transforms.Compose([
-        transforms.Resize((training_cfg.img_size, training_cfg.img_size)),
+        transforms.Resize((dataset_cfg.img_size, dataset_cfg.img_size)),
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
@@ -73,7 +73,6 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
 
     losses = AverageMeter()
     os.makedirs(os.path.dirname(training_cfg.log_file), exist_ok=True)
-    os.makedirs(debug_root, exist_ok=True)
 
     for epoch in range(already_trained_epoch, training_cfg.num_epochs):
         features = extract_features(model, dataset, batch_size=training_cfg.batch_size)
@@ -154,7 +153,8 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
 @hydra.main(config_path="conf/train.yaml")
 def main(cfg):
     print('Training Starting')
-    train(cfg.dataset, cfg.model, cfg.training, debug_root=cfg.debug_root)
+    print(cfg)
+    #train(cfg.dataset, cfg.model, cfg.training)
     print('Training Finished')
 
 

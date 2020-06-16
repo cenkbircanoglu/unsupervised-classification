@@ -6,12 +6,8 @@ hydra:
         kv_sep: '='
         item_sep: ','
         exclude_keys: []
-dataset:
-  image_root_folder: ./datasets/fashion_mnist/images
-  groundtruth_label_file: ./datasets/fashion_mnist/cls_labels.npy
-  label_file: ./datasets/fashion_mnist/cls_labels.npy
-  sample_size: 128
-  name: fashion_mnist
+defaults:
+  - dataset: fashion_mnist
 model:
   name: MobileNet
   initialize: True
@@ -21,8 +17,7 @@ training:
   batch_size: 128
   num_epochs: 100
   n_clusters: 10
-  img_size: 32
-  reassign: 4
+  reassign: 1
   use_original_labels: False
   reinitialize: True
   optimizer:
