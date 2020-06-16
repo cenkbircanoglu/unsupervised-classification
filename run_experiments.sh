@@ -25,3 +25,10 @@ python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_siz
     training.num_epochs=50 training.reassign=1 model.name=ResNet50
 python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_size=128 \
     training.num_epochs=50 training.reassign=1 model.name=ResNet152
+
+
+
+python -m src.deep_clusterers.train dataset.sample_size=100000 training.batch_size=256 \
+    training.num_epochs=250 training.reassign=1 model.initialize=False dataset.image_root_folder=./datasets/cifar100/images \
+    dataset.groundtruth_label_file=./datasets/cifar100/cls_labels.npy dataset.label_file=./datasets/cifar100/cls_labels.npy \
+    dataset.name=cifar100 training.n_clusters=100

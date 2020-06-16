@@ -88,7 +88,8 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         print('NMI against original assignment: {0:.3f}'.format(nmi))
         acc, informational_acc, category_mapping = calculate_accuracy(dataset.ori_labels, dataset.targets)
         print('Classification Acc:%s\tInformational Acc:%s\n' % (acc, informational_acc))
-        model.reinitialize_fc()
+        if training_cfg.reinitialize:
+            model.reinitialize_fc()
         optimizer_tl = torch.optim.SGD(
             model.fc.parameters(),
             lr=training_cfg.optimizer.lr,

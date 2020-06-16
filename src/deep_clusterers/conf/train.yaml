@@ -24,6 +24,7 @@ training:
   img_size: 32
   reassign: 4
   use_original_labels: False
+  reinitialize: True
   optimizer:
     name: sgd
     lr: 0.05
