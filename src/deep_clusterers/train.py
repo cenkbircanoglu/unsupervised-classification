@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from hydra import utils
 from sklearn.decomposition import PCA
+from sklearn.metrics import normalized_mutual_info_score
 from torch import nn
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
@@ -81,6 +82,10 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
         pseudo_labels, kmeans_loss = deep_kmeans.cluster(features)
         if not training_cfg.use_original_labels:
             dataset.set_pseudo_labels(pseudo_labels)
+        nmi = normalized_mutual_info_score(
+            dataset.ori_labels, dataset.targets
+        )
+        print('NMI against original assignment: {0:.3f}'.format(nmi))
         acc, informational_acc, category_mapping = calculate_accuracy(dataset.ori_labels, dataset.targets)
         print('Classification Acc:%s\tInformational Acc:%s\n' % (acc, informational_acc))
         model.reinitialize_fc()
@@ -130,10 +135,10 @@ def train(dataset_cfg, model_cfg, training_cfg, debug_root=None):
                 correct += (predicted == y).sum().item()
 
         log = 'Epoch [%s/%s],\tLoss:%s,\tKmeans loss:%s\t' \
-              'Acc:%s\tInformational acc:%s\tNetwork Acc:%s\n' % (epoch, training_cfg.num_epochs,
-                                                                  losses.get('loss_%s' % epoch),
-                                                                  kmeans_loss, acc, informational_acc,
-                                                                  (100 * correct / total))
+              'Acc:%s\tInformational acc:%s\tNetwork Acc:%s\tNMI:%s\n' % (epoch, training_cfg.num_epochs,
+                                                                          losses.get('loss_%s' % epoch),
+                                                                          kmeans_loss, acc, informational_acc,
+                                                                          (100 * correct / total), nmi)
         print(log)
         with open(training_cfg.log_file, mode='a') as f:
             f.write(log)
