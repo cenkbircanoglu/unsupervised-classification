@@ -45,7 +45,6 @@ def train(dataset_cfg, model_cfg, training_cfg):
         transforms.ToTensor(),
         transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
-
     dataset = CustomImageFolder(image_root_folder, transform=img_transform,
                                 sample_size=dataset_cfg.sample_size)
 
@@ -153,8 +152,7 @@ def train(dataset_cfg, model_cfg, training_cfg):
 @hydra.main(config_path="conf/train.yaml")
 def main(cfg):
     print('Training Starting')
-    print(cfg)
-    #train(cfg.dataset, cfg.model, cfg.training)
+    train(cfg.dataset, cfg.model, cfg.training)
     print('Training Finished')
 
 

@@ -13,10 +13,13 @@ class CustomImageFolder(ImageFolder):
         super(CustomImageFolder, self).__init__(root, transform=transform, target_transform=target_transform,
                                                 loader=loader, is_valid_file=is_valid_file)
         self.imgs = self.samples
-        if sample_size:
-            self.imgs = self.imgs[:sample_size]
-            self.samples = self.samples[:sample_size]
-            self.targets = self.targets[:sample_size]
+        try:
+            if int(sample_size):
+                self.imgs = self.imgs[:sample_size]
+                self.samples = self.samples[:sample_size]
+                self.targets = self.targets[:sample_size]
+        except:
+            pass
         self.ori_labels = self.targets
 
     def set_pseudo_labels(self, pseudo_labels):

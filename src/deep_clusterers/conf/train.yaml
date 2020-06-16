@@ -1,4 +1,6 @@
 hydra:
+  run:
+    dir: ./outputs/${dataset.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}/
   job:
     config:
       # configuration for the ${hydra.job.override_dirname} runtime variable

@@ -2,6 +2,6 @@ dataset:
   image_root_folder: ./datasets/cifar100/images
   groundtruth_label_file: ./datasets/cifar100/cls_labels.npy
   label_file: ./datasets/cifar100/cls_labels.npy
-  sample_size: 128
+  sample_size: None
   name: cifar100
   img_size: 32

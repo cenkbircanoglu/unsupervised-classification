@@ -16,7 +16,7 @@ class DeepClusterer(nn.Module):
         self.last_channel = last_channel
         self.num_classes = num_classes
         self.fc = nn.Linear(self.last_channel, self.num_classes)
-        self.module = nn.Module([self.backbone, self.avgpool])
+        self.module = nn.ModuleList([self.backbone, self.avgpool])
         if initialize:
             self._initialize_weights()
 
