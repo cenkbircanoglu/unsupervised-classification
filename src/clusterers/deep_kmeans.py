@@ -23,6 +23,7 @@ class DeepKmeans(object):
         clusterer = clusterer.fit(X)
 
         labels = clusterer.labels_
+        nmi = 0
         if self.previous_labels is not None:
             nmi = normalized_mutual_info_score(
                 self.previous_labels,
@@ -32,4 +33,4 @@ class DeepKmeans(object):
         self.previous_labels = labels
         loss = clusterer.inertia_
 
-        return labels, loss
+        return labels, loss, nmi

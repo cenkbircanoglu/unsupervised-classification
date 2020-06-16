@@ -77,13 +77,13 @@ def train(dataset_cfg, model_cfg, training_cfg):
         features = extract_features(model, dataset, batch_size=training_cfg.batch_size)
         features = apply_dimensionality_reduction(features, pca_components=training_cfg.pca.component_size)
 
-        pseudo_labels, kmeans_loss = deep_kmeans.cluster(features)
+        pseudo_labels, kmeans_loss, nmi_previous = deep_kmeans.cluster(features)
         if not training_cfg.use_original_labels:
             dataset.set_pseudo_labels(pseudo_labels)
-        nmi = normalized_mutual_info_score(
+        nmi_orj = normalized_mutual_info_score(
             dataset.ori_labels, dataset.targets
         )
-        print('NMI against original assignment: {0:.3f}'.format(nmi))
+        print('NMI against original assignment: {0:.3f}'.format(nmi_orj))
         acc, informational_acc, category_mapping = calculate_accuracy(dataset.ori_labels, dataset.targets)
         print('Classification Acc:%s\tInformational Acc:%s\n' % (acc, informational_acc))
         if training_cfg.reinitialize:
@@ -136,10 +136,11 @@ def train(dataset_cfg, model_cfg, training_cfg):
                 correct += (predicted == y).sum().item()
 
         log = 'Epoch [%s/%s],\tLoss:%s,\tKmeans loss:%s\t' \
-              'Acc:%s\tInformational acc:%s\tNetwork Acc:%s\tNMI:%s\n' % (epoch, training_cfg.num_epochs,
-                                                                          losses.get('loss_%s' % epoch),
-                                                                          kmeans_loss, acc, informational_acc,
-                                                                          (100 * correct / total), nmi)
+              'Acc:%s\tInformational acc:%s\tNetwork Acc:%s\tNMI Orj:%s\tNMI Previous:%s\n' % (
+                  epoch, training_cfg.num_epochs,
+                  losses.get('loss_%s' % epoch),
+                  kmeans_loss, acc, informational_acc,
+                  (100 * correct / total), nmi_orj, nmi_previous)
         print(log)
         with open(training_cfg.log_file, mode='a') as f:
             f.write(log)
