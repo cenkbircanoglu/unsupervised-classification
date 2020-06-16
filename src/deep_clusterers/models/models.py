@@ -15,6 +15,7 @@ class DeepClusterer(nn.Module):
         self.fc = None
         self.last_channel = last_channel
         self.num_classes = num_classes
+        self.fc = nn.Linear(self.last_channel, self.num_classes)
         if initialize:
             self._initialize_weights()
 

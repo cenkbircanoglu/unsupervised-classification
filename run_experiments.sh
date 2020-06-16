@@ -31,4 +31,4 @@ python -m src.deep_clusterers.train dataset.sample_size=70000 training.batch_siz
 python -m src.deep_clusterers.train dataset.sample_size=100000 training.batch_size=256 \
     training.num_epochs=250 training.reassign=1 model.initialize=False dataset.image_root_folder=./datasets/cifar100/images \
     dataset.groundtruth_label_file=./datasets/cifar100/cls_labels.npy dataset.label_file=./datasets/cifar100/cls_labels.npy \
-    dataset.name=cifar100 training.n_clusters=100
+    dataset.name=cifar100 training.n_clusters=100 training.reinitialize=False
