@@ -1,9 +1,13 @@
+import logging
+
 import numpy as np
 import torch
 from sklearn.cluster import KMeans
 from sklearn.metrics import normalized_mutual_info_score
 
 use_gpu = torch.cuda.is_available()
+
+logger = logging.getLogger(__name__)
 
 
 class DeepKmeans(object):
@@ -29,7 +33,7 @@ class DeepKmeans(object):
                 self.previous_labels,
                 labels
             )
-            print('NMI against previous assignment: {0:.3f}'.format(nmi))
+            logger.info('NMI against previous assignment: {0:.3f}'.format(nmi))
         self.previous_labels = labels
         loss = clusterer.inertia_
 

@@ -1,3 +1,4 @@
+import logging
 import os
 
 import hydra
@@ -26,6 +27,7 @@ seed = 7
 torch.manual_seed(7)
 np.random.seed(7)
 
+logger = logging.getLogger(__name__)
 if use_gpu:
     torch.cuda.manual_seed_all(7)
 
@@ -83,11 +85,11 @@ def train(dataset_cfg, model_cfg, training_cfg):
         nmi_orj = normalized_mutual_info_score(
             dataset.ori_labels, dataset.targets
         )
-        print('NMI against original assignment: {0:.3f}'.format(nmi_orj))
+        logger.info('NMI against original assignment: {0:.3f}'.format(nmi_orj))
         acc, informational_acc, category_mapping = calculate_accuracy(dataset.ori_labels, dataset.targets)
-        print('Classification Acc:%s\tInformational Acc:%s\n' % (acc, informational_acc))
+        logger.info('Classification Acc:%s\tInformational Acc:%s\n' % (acc, informational_acc))
         if training_cfg.reinitialize:
-            print('Reinitializing FC')
+            logger.debug('Reinitializing FC')
             model.reinitialize_fc()
         optimizer_tl = torch.optim.SGD(
             model.fc.parameters(),
@@ -102,7 +104,7 @@ def train(dataset_cfg, model_cfg, training_cfg):
                                    cluster_size=training_cfg.n_clusters)
         dataloader = DataLoader(dataset, batch_size=training_cfg.batch_size, shuffle=False, num_workers=4,
                                 drop_last=False, sampler=sampler)
-        print('Epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
+        logger.info('Epoch [{}/{}] started'.format(epoch, training_cfg.num_epochs))
         for data in tqdm(dataloader, total=int(len(dataset) * training_cfg.reassign / training_cfg.batch_size)):
             img, y, _ = data
             if use_gpu:
@@ -141,7 +143,7 @@ def train(dataset_cfg, model_cfg, training_cfg):
                   losses.get('loss_%s' % epoch),
                   kmeans_loss, acc, informational_acc,
                   (100 * correct / total), nmi_orj, nmi_previous)
-        print(log)
+        logger.info(log)
         with open(training_cfg.log_file, mode='a') as f:
             f.write(log)
         if epoch % 5 == 0:
@@ -152,9 +154,9 @@ def train(dataset_cfg, model_cfg, training_cfg):
 
 @hydra.main(config_path="conf/train.yaml")
 def main(cfg):
-    print('Training Starting')
+    logger.info('Training Starting')
     train(cfg.dataset, cfg.model, cfg.training)
-    print('Training Finished')
+    logger.info('Training Finished')
 
 
 if __name__ == '__main__':
