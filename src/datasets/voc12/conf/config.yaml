@@ -1,0 +1,7 @@
+hydra:
+  run:
+    dir: .
+dataset:
+  root_folder: ./datasets/voc12/root
+  image_root_folder: ./datasets/voc12/images
+  label_file: ./datasets/voc12/cls_labels.npy

@@ -2,5 +2,5 @@ hydra:
   run:
     dir: .
 dataset:
-  image_root_folder: ./datasets/cifar10/
+  image_root_folder: ./datasets/cifar10/images
   label_file: ./datasets/cifar10/cls_labels.npy

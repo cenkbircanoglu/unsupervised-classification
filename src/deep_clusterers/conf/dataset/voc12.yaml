@@ -1,0 +1,7 @@
+dataset:
+  image_root_folder: ./datasets/voc12/images
+  groundtruth_label_file: ./datasets/voc12/cls_labels.npy
+  label_file: ./datasets/voc12/cls_labels.npy
+  sample_size: None
+  name: voc12
+  img_size: 256

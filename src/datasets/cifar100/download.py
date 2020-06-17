@@ -8,7 +8,8 @@ from torchvision.datasets import CIFAR100
 def download(dataset_cfg):
     train = CIFAR100('/tmp', train=True, transform=None, target_transform=None, download=True)
     test = CIFAR100('/tmp', train=False, transform=None, target_transform=None, download=True)
-    img_root = os.path.join(dataset_cfg.image_root_folder, 'images')
+
+    img_root = dataset_cfg.image_root_folder
     os.makedirs(img_root, exist_ok=True)
     os.makedirs(os.path.dirname(dataset_cfg.label_file), exist_ok=True)
     label_set = set(train.class_to_idx.values())

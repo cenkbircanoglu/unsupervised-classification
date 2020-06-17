@@ -1,0 +1,7 @@
+dataset:
+  image_root_folder: ./datasets/voc07/images
+  groundtruth_label_file: ./datasets/voc07/cls_labels.npy
+  label_file: ./datasets/voc07/cls_labels.npy
+  sample_size: None
+  name: voc07
+  img_size: 256
