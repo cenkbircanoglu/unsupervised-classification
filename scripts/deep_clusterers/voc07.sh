@@ -22,7 +22,11 @@ python -m src.deep_clusterers.train dataset=voc07 training.batch_size=64 \
     training.num_epochs=50 training.reassign=20 training.n_clusters=10
 python -m src.deep_clusterers.train dataset=voc07 training.batch_size=64 \
     training.num_epochs=50 training.reassign=20 training.n_clusters=20
-python -m src.deep_clusterers.train dataset=voc07 training.batch_size=32 \
+python -m src.deep_clusterers.train dataset=voc07 training.batch_size=16 \
     training.num_epochs=100 model.name=ResNet50 training.n_clusters=20
-python -m src.deep_clusterers.train dataset=voc07 training.batch_size=32 \
+python -m src.deep_clusterers.train dataset=voc07 training.batch_size=16 \
     training.num_epochs=100 model.name=ResNet152 training.n_clusters=20
+python -m src.deep_clusterers.train dataset=voc07 training.batch_size=16 \
+    training.num_epochs=100 model.name=ResNet50 training.n_clusters=20 training.pca.component_size=256
+python -m src.deep_clusterers.train dataset=voc07 training.batch_size=16 \
+    training.num_epochs=100 model.name=ResNet152 training.n_clusters=20 training.pca.component_size=256
